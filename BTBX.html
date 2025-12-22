@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Resolution Reveal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #050510; font-family: 'Segoe UI', sans-serif; }
+        
+        /* HEADER */
+        #header-ui {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+            width: 100%;
+        }
+
+        .main-title {
+            font-family: 'Georgia', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .sub-title {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #00f2ff;
+            letter-spacing: 3px;
+            margin-top: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+        }
+
+        /* BUTTONS */
+        #ui-layer {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .round-btn {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #00f2ff, #00c3ff);
+            color: #050510; font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; justify-content: center; align-items: center;
+            outline: none;
+            pointer-events: auto;
+        }
+                    .round-btns {
+            width: 25px; height: 25px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #00ff2f, #ff3300);
+            color: #050510; font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; justify-content: center; align-items: center;
+            outline: none;
+            pointer-events: auto;
+        }
+
+        #btn-play {
+            width: 75px; height: 75px;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+             color: #1a1a2e;
+        }
+
+        .round-btn:hover { transform: scale(1.15); }
+        #btn-download:hover, #btn-follow:hover { box-shadow: 0 0 50px rgba(0, 242, 255, 0.6); }
+        #btn-play:hover { box-shadow: 0 0 50px rgba(255, 215, 0, 0.7); }
+
+        #loader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; color: #00f2ff;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 999; transition: opacity 1s; font-weight: bold; letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">INITIALIZING SCENE...</div>
+
+    <div id="header-ui">
+        <h1 class="main-title">2026 RESOLUTION CHALLENGE</h1>
+        <div class="sub-title">WHAT 2026 WANTS ME TO DO NEXT</div>
+    </div>
+
+    <div id="ui-layer">
+        <button class="round-btn" id="btn-download" title="Share Snapshot"><i class="fas fa-share-alt"></i></button>
+                 <button class="round-btns" id="btn-follows" title="Follow on LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+        <button class="round-btn" id="btn-play" title="Open Gift"><i class="fas fa-play" id="play-icon"></i></button>
+
+        <button class="round-btn" id="btn-follow" title="Follow on LinkedIn"><i class="fab fa-linkedin-in"></i></button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+
+    <script>
+        // --- 1. CONFIGURATION & RANDOM MESSAGE LOGIC ---
+        const linkedinURL = "https://www.linkedin.com/company/backtobasee/"; 
+        const msgTitle = "2026 GOALS"; 
+
+        const messages = [
+"Stop wishing and start doing.",
+"Crush your goals this year.",
+"Discipline beats motivation every time.",
+"Wake up early and attack the day.",
+"Don’t wait for the perfect moment.",
+"Make your future self proud.",
+"Consistency is your new best friend.",
+"Stop looking back, you’re not going there.",
+"Be stronger than your excuses today.",
+"Commit to the process, not the result.",
+"Do the hard work, especially when tired.",
+"Small steps lead to big changes.",
+"Show up every single day.",
+"Replace 'I can't' with 'I will'.",
+"Stop hitting that snooze button.",
+"Finish what you start this year.",
+"Own your choices and your path.",
+"Keep grinding until you make it.",
+"Turn your ambition into action.",
+"Be the hardest worker in the room.",
+"Prove them wrong with your results.",
+"Take charge of your own life.",
+"Don't settle for average.",
+"Push past your limits today.",
+"Your potential is limitless, believe it.",
+"Treat your body like a temple.",
+"Drink more water, plain and simple.",
+"Eat real food, not processed junk.",
+"Take the stairs, not the elevator.",
+"Sleep is not for the weak.",
+"Move your body every single day.",
+"Cut the sugar and feel the difference.",
+"Lift heavy things and get strong.",
+"Walk more, sit less.",
+"Prioritize your mental health daily.",
+"Stretch it out and stay flexible.",
+"Fresh air is good for the soul.",
+"Meal prep like a pro this year.",
+"Listen to your body, it knows best.",
+"Sweat it out and feel great.",
+"Quit the bad habits for good.",
+"Your health is your true wealth.",
+"Run your own race at your pace.",
+"Find an activity you actually enjoy.",
+"Stand up straight and fix that posture.",
+"Eat your greens without complaining.",
+"Challenge your physical limits often.",
+"Rest days are productive days too.",
+"Get some sun on your face.",
+"Strong body, strong mind, remember that.",
+"Read more books, scroll less feeds.",
+"Learn one new skill this month.",
+"Invest in your brain, it pays dividends.",
+"Stay curious and keep asking questions.",
+"Master your craft with daily practice.",
+"Turn off the TV and create.",
+"Find a mentor and listen closely.",
+"Write down your ideas immediately.",
+"Accept feedback without getting defensive.",
+"Expand your network with good people.",
+"Listen more than you speak today.",
+"Failing is just part of learning.",
+"Get uncomfortable to grow faster.",
+"Sharpen your mind with puzzles.",
+"Teach what you know to others.",
+"Adapt to changes quickly.",
+"Keep your skills sharp and updated.",
+"Focus on deep work, not busy work.",
+"Be a student of life, always.",
+"Improve one percent every single day.",
+"Stop procrastinating and start studying.",
+"Knowledge is power, so grab it.",
+"Challenge your own opinions regularly.",
+"Embrace the struggle of learning.",
+"Level up your career game.",
+"Protect your peace at all costs.",
+"Save more money than you spend.",
+"Be kind, but take no nonsense.",
+"Balance your hustle with downtime.",
+"Let go of what you can't control.",
+"Keep your space clean and organized.",
+"Say 'no' to things that drain you.",
+"Call your family more often.",
+"Practice gratitude every morning.",
+"Stay humble but stay hungry.",
+"Don't compare your Chapter 1 to their 20.",
+"Find joy in the little things.",
+"Be present in the moment.",
+"Surround yourself with winners.",
+"Forgive yourself and move forward.",
+"Smile more, it confuses your enemies.",
+"Trust your gut instincts, they're right.",
+"Live within your means, always.",
+"Adventure more, worry less.",
+"Be the energy you want to attract.",
+"Speak the truth, even when shaky.",
+"Help others without expecting rewards.",
+"Value your time, it’s limited.",
+"Stay calm in the chaos.",
+"Love yourself first.",
+"Start before you feel ready.",
+"Action cures fear, so get moving.",
+"Don't break the chain of progress.",
+"Your only competition is you yesterday.",
+"Do one thing that scares you.",
+"Success is rented, rent is due daily.",
+"Build habits, don't just set goals.",
+"Plan your day the night before.",
+"Stop overthinking and start executing.",
+"Focus on the step in front of you.",
+"Momentum is everything, keep it going.",
+"Don't let a bad day stop you.",
+"Discomfort is the price of admission.",
+"Stop negotiating with your inner weakness.",
+"Finish your projects, don't just start them.",
+"Prove your doubters wrong with silence.",
+"Work while they sleep.",
+"Be addicted to bettering yourself.",
+"Winners find a way, losers find excuses.",
+"Results happen when you do the work.",
+"Keep your promises to yourself.",
+"Don't stop when you are tired.",
+"Focus on solutions, not the problems.",
+"Be the pilot, not the passenger.",
+"Make this year your masterpiece.",
+"Carry a water bottle everywhere you go.",
+"Cook your own meals more often.",
+"Don't drink your calories.",
+"Get sunlight within an hour of waking.",
+"Park further away and walk.",
+"Take a break from alcohol this month.",
+"Floss your teeth every single night.",
+"Eat slower and enjoy your food.",
+"Stop eating when you are eighty percent full.",
+"Go to bed at the same time.",
+"Get a standing desk or stand more.",
+"Stretch while you watch TV.",
+"Add vegetables to every single meal.",
+"Take a cold shower occasionally.",
+"Monitor your screen time strictly.",
+"Wash your face before sleeping.",
+"Replace soda with sparkling water.",
+"Take deep breaths when you feel stressed.",
+"Don't skip breakfast if you need energy.",
+"Protect your skin with sunscreen.",
+"Check your blood pressure regularly.",
+"Walk after heavy meals for digestion.",
+"Listen to upbeat music while training.",
+"Join a team sport for fun.",
+"Your body keeps score, treat it well.",
+"Learn to say 'no' effectively.",
+"Stop multitasking, it kills productivity.",
+"Update your resume even if employed.",
+"Ask for that raise or promotion.",
+"Automate your boring tasks.",
+"Find a podcast that makes you smarter.",
+"Block out time for deep thinking.",
+"Organize your digital files this weekend.",
+"Learn the basics of investing.",
+"Don't be afraid to ask for help.",
+"Arrive five minutes early to everything.",
+"Reply to important emails immediately.",
+"Build an emergency fund for safety.",
+"Network before you need a job.",
+"Write your goals down on paper.",
+"Learn a new language, just the basics.",
+"Teach yourself to speed read.",
+"Limit meetings to thirty minutes max.",
+"Clean your workspace every evening.",
+"Follow leaders who inspire you.",
+"Invest in a good course or workshop.",
+"Track your expenses for a month.",
+"Stop buying things to impress others.",
+"Focus on value, not just price.",
+"Make your bed every morning.",
+"Put the phone away at dinner.",
+"Listen without planning your response.",
+"Compliment a stranger today.",
+"Stop complaining about the weather.",
+"Let go of grudges, they are heavy.",
+"Spend time alone without distractions.",
+"Reconnect with an old friend.",
+"Don't take yourself too seriously.",
+"Be the first to say hello.",
+"Practice silence in a noisy world.",
+"Give more than you take.",
+"Stop trying to please everyone.",
+"Take a weekend trip somewhere new.",
+"Be honest about your feelings.",
+"Don't gossip, it ruins your reputation.",
+"Celebrate other people's wins.",
+"Ask your parents about their childhood.",
+"Learn to enjoy your own company.",
+"Be kind to service workers always.",
+"Volunteer for a cause you care about.",
+"Remind yourself that you are enough.",
+"Laugh at your own mistakes.",
+"Stop worrying about what 'they' think.",
+"Make time for your hobbies.",
+"Live in the now, not the past.",
+"Be a lifelong learner.",
+"Chase progress, not perfection.",
+"Your vibe attracts your tribe.",
+"Dream big, start small, act now.",
+
+        ];
+
+        function getRandomMessage() {
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            return messages[randomIndex];
+        }
+
+        const msgSubtitle = getRandomMessage();
+
+        // --- 2. SCENE SETUP ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a12); 
+        scene.fog = new THREE.Fog(0x0a0a12, 20, 60);
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 3, 16); 
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.pixelRatio = window.devicePixelRatio; 
+        document.body.appendChild(renderer.domElement);
+
+        // --- 3. LIGHTING ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); scene.add(ambientLight);
+        const spotLight = new THREE.SpotLight(0xffd700, 1.5);
+        spotLight.position.set(10, 20, 10); spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 2048; spotLight.shadow.mapSize.height = 2048; scene.add(spotLight);
+        const fillLight = new THREE.PointLight(0x00c3ff, 0.8);
+        fillLight.position.set(-10, 5, 5); scene.add(fillLight);
+        const backLight = new THREE.SpotLight(0xffd700, 1);
+        backLight.position.set(0, 10, -10); scene.add(backLight);
+
+        // --- 4. MATERIALS & TEXTURES ---
+        const textureLoader = new THREE.TextureLoader();
+        
+        // --- RELATIVE LOGO PATH ---
+        const logoTexture = textureLoader.load('https://yashwanthbondapalli.github.io/yashwanthbondapalli/Logo.png'); 
+        logoTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+        const boxMaterialDark = new THREE.MeshStandardMaterial({ color: 0x111116, roughness: 0.7, metalness: 0.2 });
+        const logoMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, map: logoTexture, transparent: true, roughness: 0.3, metalness: 0.1 });
+        const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, roughness: 0.15, metalness: 0.9 });
+        const innerMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 1 });
+
+        // --- 5. BOX GEOMETRY ---
+        const boxW = 5;
+        const boxH = 3.5;
+        const boxD = 3.5;
+
+        const giftBox = new THREE.Group(); 
+        giftBox.position.y = -1.5;
+        scene.add(giftBox);
+        
+        // Body
+        const boxBody = new THREE.Mesh(new THREE.BoxGeometry(boxW, boxH, boxD), [boxMaterialDark, boxMaterialDark, innerMaterial, boxMaterialDark, logoMaterial, boxMaterialDark]);
+        boxBody.position.y = boxH / 2; 
+        boxBody.castShadow = true; boxBody.receiveShadow = true; giftBox.add(boxBody);
+        
+        // Trims
+        const trimGeo = new THREE.BoxGeometry(boxW + 0.1, 0.1, boxD + 0.1);
+        giftBox.add(new THREE.Mesh(trimGeo, goldMaterial).translateY(0.1)); 
+        giftBox.add(new THREE.Mesh(trimGeo, goldMaterial).translateY(boxH));
+
+        // Lid
+        const lidGroup = new THREE.Group(); 
+        lidGroup.position.set(0, boxH, -boxD/2);
+        giftBox.add(lidGroup);
+
+        const lidMesh = new THREE.Mesh(new THREE.BoxGeometry(boxW + 0.2, 0.5, boxD + 0.2), boxMaterialDark);
+        lidMesh.position.set(0, 0.25, boxD/2 + 0.1); lidMesh.castShadow = true; lidGroup.add(lidMesh);
+        
+        const lidGold = new THREE.Mesh(new THREE.BoxGeometry(boxW - 0.2, 0.52, boxD - 0.2), goldMaterial);
+        lidGold.position.set(0, 0.25, boxD/2 + 0.1); lidGroup.add(lidGold);
+
+        // --- 6. CARD TEXTURE GENERATION (EXACT BLUE & GOLD FROM IMAGE 4) ---
+        function createPremiumCardTexture() {
+            const canvas = document.createElement('canvas'); canvas.width = 2048; canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+            
+            // --- UPDATED BACKGROUND: ROYAL NAVY BLUE GRADIENT ---
+            const grad = ctx.createRadialGradient(1024, 512, 100, 1024, 512, 1200);
+            grad.addColorStop(0, '#020e21'); // Deep Royal Blue Center
+            grad.addColorStop(1, '#000000'); // Almost Black Edges
+            ctx.fillStyle = grad; 
+            ctx.fillRect(0,0,2048,1024);
+            
+            // Borders (Gold)
+            ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 40; ctx.strokeRect(40, 40, 1968, 944);
+            ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 10; ctx.strokeRect(90, 90, 1868, 844);
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            
+            // --- UPDATED TITLE: BRIGHT GOLD ---
+            ctx.fillStyle = '#ffd700'; // Gold Text
+            ctx.font = 'bold 140px "Georgia", serif';
+            ctx.fillText(msgTitle.toUpperCase(), 1024, 300);
+            
+            // Divider (Gold)
+            ctx.beginPath(); ctx.moveTo(724, 420); ctx.lineTo(1324, 420); ctx.lineWidth = 5; ctx.strokeStyle = '#d4af37'; ctx.stroke();
+            
+            // --- UPDATED SUBTITLE: BRIGHT GOLD (NO GLOW) ---
+            // We remove the cyan glow and set the text color to gold to match image 4.
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+
+            ctx.fillStyle = '#ffd700'; // Gold Text
+            ctx.font = 'italic 100px "Georgia", serif';
+
+            const maxWidth = 1800; const lineHeight = 110; const x = 1024; let y = 580;
+            const words = msgSubtitle.split(' '); let line = ''; const lines = [];
+            for(let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' '; const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) { lines.push(line); line = words[n] + ' '; } else { line = testLine; }
+            } lines.push(line);
+            
+            lines.forEach((l, i) => { ctx.fillText(l, x, y + (i * lineHeight)); });
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy(); return texture;
+        }
+
+        const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 2.5), new THREE.MeshStandardMaterial({ map: createPremiumCardTexture(), side: THREE.DoubleSide, roughness: 0.3, metalness: 0.4, emissive: 0xffffff, emissiveIntensity: 0.05 }));
+        cardMesh.position.set(0, 2, 0); 
+        cardMesh.rotation.x = -Math.PI / 2; 
+        cardMesh.scale.set(0,0,0); 
+        giftBox.add(cardMesh);
+
+        // --- 7. PARTICLES ---
+        const pGeo = new THREE.BufferGeometry(); const pPos = new Float32Array(1500);
+        for(let i=0; i<1500; i++) pPos[i] = (Math.random() - 0.5) * 4;
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        const particlesMat = new THREE.PointsMaterial({ color: 0xffaa00, size: 0.12, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
+        const particleSystem = new THREE.Points(pGeo, particlesMat); particleSystem.position.y = 2; scene.add(particleSystem);
+
+        // --- 8. INTERACTION LOGIC ---
+        let isOpen = false; 
+        let isAnimating = false;
+        let particlesActive = false;
+
+        const btnPlay = document.getElementById('btn-play');
+        const playIcon = document.getElementById('play-icon');
+        const btnDownload = document.getElementById('btn-download');
+        const btnFollow = document.getElementById('btn-follow');
+        const btnFollows = document.getElementById('btn-follows');
+
+        btnPlay.addEventListener('click', () => {
+            if(isAnimating) return; isAnimating = true;
+            if(!isOpen) {
+                // --- OPEN SEQUENCE ---
+                const tl = gsap.timeline();
+
+                // 1. Smart Rotation Reset
+                const currentRot = giftBox.rotation.y;
+                const targetRot = Math.round(currentRot / (Math.PI * 2)) * (Math.PI * 2);
+                tl.to(giftBox.rotation, { y: targetRot, duration: 1.5, ease: "power2.inOut" }, "start");
+
+                // 2. Shrink & Drop
+                tl.to(giftBox.scale, { x: 0.4, y: 0.4, z: 0.4, duration: 2, ease: "power2.inOut" }, "start")
+                  .to(giftBox.position, { y: -4, duration: 2, ease: "power2.inOut" }, "start");
+
+                // 3. Lid
+                tl.to(lidGroup.rotation, { x: -Math.PI / 1.6, duration: 1.5, ease: "power2.inOut" }, "start+=0.3");
+
+                // 4. Card Rise
+                tl.to(cardMesh.position, { y: 14, duration: 2, ease: "power2.out" }, "start+=0.5")
+                  .to(cardMesh.rotation, { x: 0, duration: 2 }, "<")
+                  .to(cardMesh.scale, { x: 4, y: 4, z: 4, duration: 2 }, "<");
+                
+                // 5. Particles
+                setTimeout(() => { 
+                    particlesActive = true; 
+                    gsap.to(particlesMat, { opacity: 1, duration: 0.5 });
+                    gsap.to(particleSystem.scale, { x: 3, y: 3, z: 3, duration: 3 });
+                }, 1200);
+                
+                setTimeout(() => { playIcon.classList.remove('fa-play'); playIcon.classList.add('fa-times'); isOpen = true; isAnimating = false; }, 2500);
+            } else {
+                // --- CLOSE SEQUENCE ---
+                const tl = gsap.timeline();
+                
+                particlesActive = false;
+                gsap.to(particlesMat, { opacity: 0, duration: 0.3 });
+                gsap.set(particleSystem.scale, { x: 1, y: 1, z: 1 });
+
+                tl.to(lidGroup.rotation, { x: 0, duration: 1.5, ease: "bounce.out" }, "start+=0.5");
+
+                tl.to(cardMesh.scale, { x: 0, y: 0, z: 0, duration: 1.5, ease: "power2.in" }, "start")
+                  .to(cardMesh.rotation, { x: -Math.PI / 2, duration: 1.5 }, "<")
+                  .to(cardMesh.position, { y: 2, duration: 1.5 }, "<");
+
+                tl.to(giftBox.scale, { x: 1, y: 1, z: 1, duration: 2, ease: "power2.inOut" }, "start+=0.5")
+                  .to(giftBox.position, { y: -1.5, duration: 2, ease: "power2.inOut" }, "<");
+
+                setTimeout(() => { playIcon.classList.remove('fa-times'); playIcon.classList.add('fa-play'); isOpen = false; isAnimating = false; }, 2500);
+            }
+        });
+
+// --- REPLACED DOWNLOAD BUTTON LISTENER ---
+       btnDownload.addEventListener('click', () => {
+            const uiLayer = document.getElementById('ui-layer');
+            const bottomText = document.getElementById('bottom-text');
+            const originalBtnContent = btnDownload.innerHTML;
+
+            // 1. Visual Feedback
+            btnDownload.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            // 2. Hide UI
+            if (uiLayer) uiLayer.style.visibility = 'hidden';
+            if (bottomText) bottomText.style.visibility = 'hidden';
+
+            html2canvas(document.body, { backgroundColor: null, logging: false }).then(canvas => {
+                
+                // 3. Restore UI
+                if (uiLayer) uiLayer.style.visibility = 'visible';
+                if (bottomText) bottomText.style.visibility = 'visible';
+                btnDownload.innerHTML = originalBtnContent;
+
+                const postText = `I just revealed my 2026 resolution! The future wants me to: "${msgSubtitle}" 🚀 #2026Goals #FutureSelf`;
+
+                // --- SMART SHARE LOGIC ---
+                
+                // Convert canvas to a Blob (file object) for sharing
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], '2026-Resolution.png', { type: 'image/png' });
+
+                    // CHECK: Does the browser support native sharing of files? (Mostly Mobile)
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                title: 'My 2026 Resolution',
+                                text: postText,
+                                files: [file] // <--- This attaches the image directly!
+                            });
+                            // Success! No need to do anything else.
+                        } catch (err) {
+                            console.log('Share cancelled or failed', err);
+                        }
+                    } 
+                    // FALLBACK: Desktop or browsers that don't support file sharing
+                    else {
+                        // 1. Download Image
+                        const link = document.createElement('a');
+                        link.href = canvas.toDataURL('image/png');
+                        link.download = '2026-Resolution.png';
+                        link.click();
+
+                        // 2. Open LinkedIn Desktop Share URL
+                        // Note: We use encodeURIComponent to ensure special characters don't break the link
+                        const linkedinUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(postText)}`;
+                        
+                        setTimeout(() => {
+                            window.open(linkedinUrl, '_blank');
+                            setTimeout(() => {
+                                alert("Image Downloaded!\n\nPlease drag the downloaded image into the LinkedIn tab that just opened.");
+                            }, 500);
+                        }, 800);
+                    }
+                }, 'image/png');
+            });
+        });
+
+
+        btnFollow.addEventListener('click', () => { window.open(linkedinURL, '_blank'); });
+        btnFollows.addEventListener('click', () => { window.open("https://www.linkedin.com/in/yashwanth-bondapalli-37b6a7255", '_blank'); });
+
+        // --- 9. ANIMATION LOOP ---
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate); const t = clock.getElapsedTime();
+            
+            if(!isOpen && !isAnimating) {
+                giftBox.position.y = -1.5 + Math.sin(t) * 0.1; 
+                giftBox.rotation.y += 0.009;
+            }
+            if(particlesActive) { 
+                particleSystem.rotation.y += 0.005; 
+                if(particlesMat.opacity > 0) particlesMat.opacity = 0.6 + Math.sin(t * 3) * 0.3; 
+            }
+            renderer.render(scene, camera);
+        }
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+        document.getElementById('loader').style.opacity = 0; setTimeout(() => document.getElementById('loader').style.display = 'none', 1000);
+        animate();
+    </script>
+</body>
+
+</html>
+
+
